@@ -3,12 +3,10 @@
 
 #define MAX 20
 
-// Estrutura para representar uma aresta
 typedef struct {
   int origem, destino, peso;
 } Aresta;
 
-// Estrutura para Union-Find (Disjoint Set)
 int pai[MAX];
 int rank[MAX];
 
@@ -40,7 +38,6 @@ void unir(int u, int v) {
   }
 }
 
-// Função de comparação para qsort (ordenar por peso crescente)
 int compararArestas(const void *a, const void *b) {
   Aresta *arestaA = (Aresta *)a;
   Aresta *arestaB = (Aresta *)b;
@@ -51,9 +48,8 @@ void kruskal(int grafo[MAX][MAX], int n) {
   Aresta arestas[MAX * MAX];
   int contArestas = 0;
 
-  // Transformar matriz de adjacência em lista de arestas
   for (int i = 0; i < n; i++) {
-    for (int j = i + 1; j < n; j++) {  // j=i+1 para não repetir arestas
+    for (int j = i + 1; j < n; j++) {
       if (grafo[i][j] != 0) {
         arestas[contArestas].origem = i;
         arestas[contArestas].destino = j;
@@ -63,7 +59,6 @@ void kruskal(int grafo[MAX][MAX], int n) {
     }
   }
 
-  // Ordenar arestas pelo peso
   qsort(arestas, contArestas, sizeof(Aresta), compararArestas);
 
   inicializarConjuntos(n);
