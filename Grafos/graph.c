@@ -283,10 +283,12 @@ int main() {
         printf("\nArestas da AGM:\n");
         int totalWeight = 0;
 
+        // Percorre as arestas
         for (int i = 0; i < numberOfEdges; i++) {
           int u = edges[i].origin;
           int v = edges[i].destination;
 
+          // Verifica se duas arestas estão no mesmo conjunto
           if (find(u) != find(v)) {
             printf("(%d , %d) -> peso %d\n", u, v, edges[i].weight);
             totalWeight += edges[i].weight;
