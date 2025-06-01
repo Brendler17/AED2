@@ -4,12 +4,54 @@
 #define MAX 20
 #define INFINITE 9999
 
+// Estrutura para aresta
+typedef struct {
+  int origin, destination, weight;
+} Edge;
+
+// Estrutura para Union-Find
+int father[MAX], rank[MAX];
+
+// Função de comparação para o QSort
+int compareEdges(const void *a, const void *b) {
+  Edge *edgeA = (Edge *)a;
+  Edge *edgeB = (Edge *)b;
+  return edgeA->weight - edgeB->weight;
+}
+
+// Encontra a raiz de um vértice ou conjunto
+int find(int vertice) {
+  if (father[vertice] != vertice) {
+    father[vertice] = find(father[vertice]);
+  }
+
+  return father[vertice];
+}
+
+// Faz a união dos conjuntos
+void unionSets(int u, int v) {
+  int rootU = find(u);
+  int rootV = find(v);
+
+  if (rootU == rootV) return;  // Já estão no mesmo conjunto
+
+  if (rank[rootU] > rank[rootV]) {
+    father[rootV] = rootU;
+  } else if (rank[rootU] < rank[rootV]) {
+    father[rootU] = rootV;
+  } else {
+    father[rootV] = rootU;  // Escolhe rootU como raiz
+    rank[rootU]++;          // Incrementa o rank da nova raiz
+  }
+}
+
 void showMenu() {
   printf("\n------- MENU -------");
   printf("\n1. Inserir Grafo");
   printf("\n2. Gerar Grafo");
   printf("\n3. Exibir Matriz de Adjacência");
   printf("\n4. Calcular o Menor Caminho");
+  printf("\n5. Calcular a Árvore Geradora Mínima");
   printf("\n0. Sair");
 }
 
@@ -206,6 +248,53 @@ int main() {
           }
           printf("\n");
         }
+
+      } break;
+      case 5: {
+        if (graph == NULL) {
+          system("clear");
+          printf("\nMatriz de adjacência está vazia!\n");
+          break;
+        }
+
+        Edge edges[(numberOfVertices * (numberOfVertices - 1)) / 2];
+        int numberOfEdges = 0;
+
+        // Transformar matriz de adjacência em lista de arestas
+        for (int i = 0; i < numberOfVertices; i++) {
+          for (int j = i + 1; j < numberOfVertices; j++) {
+            edges[numberOfEdges].origin = i;
+            edges[numberOfEdges].destination = j;
+            edges[numberOfEdges].weight = graph[i][j];
+            numberOfEdges++;
+          }
+        }
+
+        // Ordenar as arestas pelo peso -> menor para o maior
+        qsort(edges, numberOfEdges, sizeof(Edge), compareEdges);
+
+        // Inicializar estruturas
+        for (int i = 0; i < numberOfVertices; i++) {
+          father[i] = i;
+          rank[i] = 0;
+        }
+
+        system("clear");
+        printf("\nArestas da AGM:\n");
+        int totalWeight = 0;
+
+        for (int i = 0; i < numberOfEdges; i++) {
+          int u = edges[i].origin;
+          int v = edges[i].destination;
+
+          if (find(u) != find(v)) {
+            printf("(%d , %d) -> peso %d\n", u, v, edges[i].weight);
+            totalWeight += edges[i].weight;
+            unionSets(u, v);
+          }
+        }
+
+        printf("Peso total da AGM: %d\n", totalWeight);
 
       } break;
       case 0: {
