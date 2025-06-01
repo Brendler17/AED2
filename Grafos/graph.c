@@ -193,12 +193,13 @@ int main() {
           int current = destination;
           int counter = 0;
 
-          // Preencher o caminho, começando do elemento destino até o elemento inicial
+          // Adiciona o current no path até chegar na origem, movendo-se para o predecessor
           while (current != -1) {
             path[counter++] = current;
             current = previous[current];
           }
 
+          // Percorre o path de trás para frente, imprimindo cada vértice do caminho
           for (int i = counter - 1; i >= 0; i--) {
             printf("%d", path[i]);
             if (i != 0) printf(" -> ");
