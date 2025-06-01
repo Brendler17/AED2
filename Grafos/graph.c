@@ -10,7 +10,7 @@ typedef struct {
 } Edge;
 
 // Estrutura para Union-Find
-int father[MAX], rank[MAX];
+int roots[MAX], rank[MAX];
 
 // Função de comparação para o QSort
 int compareEdges(const void *a, const void *b) {
@@ -21,27 +21,27 @@ int compareEdges(const void *a, const void *b) {
 
 // Encontra a raiz de um vértice ou conjunto
 int find(int vertice) {
-  if (father[vertice] != vertice) {
-    father[vertice] = find(father[vertice]);
+  if (roots[vertice] != vertice) {
+    roots[vertice] = find(roots[vertice]);
   }
 
-  return father[vertice];
+  return roots[vertice];
 }
 
 // Faz a união dos conjuntos
-void unionSets(int u, int v) {
-  int rootU = find(u);
-  int rootV = find(v);
+void unionSets(int x, int y) {
+  int rootX = find(x);
+  int rootY = find(y);
 
-  if (rootU == rootV) return;  // Já estão no mesmo conjunto
+  if (rootX == rootY) return;  // Já estão no mesmo conjunto
 
-  if (rank[rootU] > rank[rootV]) {
-    father[rootV] = rootU;
-  } else if (rank[rootU] < rank[rootV]) {
-    father[rootU] = rootV;
+  if (rank[rootX] > rank[rootY]) {  //
+    roots[rootY] = rootX;
+  } else if (rank[rootX] < rank[rootY]) {
+    roots[rootX] = rootY;
   } else {
-    father[rootV] = rootU;  // Escolhe rootU como raiz
-    rank[rootU]++;          // Incrementa o rank da nova raiz
+    roots[rootY] = rootX;  // Caso rank iguais -> e rootX como raiz
+    rank[rootX]++;         // Incrementa o rank
   }
 }
 
@@ -275,7 +275,7 @@ int main() {
 
         // Inicializar estruturas
         for (int i = 0; i < numberOfVertices; i++) {
-          father[i] = i;
+          roots[i] = i;
           rank[i] = 0;
         }
 
@@ -285,14 +285,14 @@ int main() {
 
         // Percorre as arestas
         for (int i = 0; i < numberOfEdges; i++) {
-          int u = edges[i].origin;
-          int v = edges[i].destination;
+          int x = edges[i].origin;
+          int y = edges[i].destination;
 
           // Verifica se duas arestas estão no mesmo conjunto
-          if (find(u) != find(v)) {
-            printf("(%d , %d) -> peso %d\n", u, v, edges[i].weight);
+          if (find(x) != find(y)) {
+            printf("(%d , %d) -> peso %d\n", x, y, edges[i].weight);
             totalWeight += edges[i].weight;
-            unionSets(u, v);
+            unionSets(x, y);
           }
         }
 
