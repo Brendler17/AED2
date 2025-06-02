@@ -4,6 +4,8 @@
 #define MAX 20
 #define INFINITE 9999
 
+void freeGraph(int **graph, int numberOfLines);
+
 // Estrutura para aresta
 typedef struct {
   int origin, destination, weight;
@@ -11,13 +13,6 @@ typedef struct {
 
 // Estrutura para Union-Find
 int roots[MAX], rank[MAX];
-
-// Função de comparação para o QSort
-int compareEdges(const void *a, const void *b) {
-  Edge *edgeA = (Edge *)a;
-  Edge *edgeB = (Edge *)b;
-  return edgeA->weight - edgeB->weight;
-}
 
 // Encontra a raiz de um vértice ou conjunto
 int find(int vertice) {
@@ -45,6 +40,41 @@ void unionSets(int x, int y) {
   }
 }
 
+// Função de comparação para o QSort
+int compareEdges(const void *a, const void *b) {
+  Edge *edgeA = (Edge *)a;
+  Edge *edgeB = (Edge *)b;
+  return edgeA->weight - edgeB->weight;
+}
+
+// Aloca memória para a matriz
+int allocateAdjacencyMatrix(int ***graph, size_t size) {
+  *graph = (int **)malloc(size * sizeof(int *));
+  if (*graph == NULL) {
+    printf("\nErro ao alocar memória!\n");
+    return 1;
+  }
+
+  for (size_t line = 0; line < size; line++) {
+    (*graph)[line] = (int *)malloc(size * sizeof(int));
+    if ((*graph)[line] == NULL) {
+      printf("\nErro ao alocar memória!\n");
+      freeGraph(*graph, line);
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+// Libera memória da matriz
+void freeGraph(int **graph, int numberOfLines) {
+  for (int line = 0; line < numberOfLines; line++) {
+    free(graph[line]);
+  }
+  free(graph);
+}
+
 void showMenu() {
   printf("\n------- MENU -------");
   printf("\n1. Inserir Grafo");
@@ -53,13 +83,6 @@ void showMenu() {
   printf("\n4. Calcular o Menor Caminho");
   printf("\n5. Calcular a Árvore Geradora Mínima");
   printf("\n0. Sair");
-}
-
-void freeGraph(int **graph, int numberOfLines) {
-  for (int line = 0; line < numberOfLines; line++) {
-    free(graph[line]);
-  }
-  free(graph);
 }
 
 int main() {
@@ -78,18 +101,8 @@ int main() {
         scanf("%d", &numberOfVertices);
 
         // Alocar a matriz de adjacência
-        graph = (int **)malloc(numberOfVertices * sizeof(int *));
-        if (graph == NULL) {
-          printf("\nErro ao alocar memória!\n");
+        if (allocateAdjacencyMatrix(&graph, numberOfVertices)) {
           return 1;
-        }
-        for (int line = 0; line < numberOfVertices; line++) {
-          graph[line] = (int *)malloc(numberOfVertices * sizeof(int));
-          if (graph[line] == NULL) {
-            printf("\nErro ao alocar memória!\n");
-            freeGraph(graph, line);
-            return 1;
-          }
         }
 
         printf("Digite a matriz de adjacência (0 se não houver aresta): \n");
@@ -122,18 +135,8 @@ int main() {
         fscanf(file, "%d", &numberOfVertices);
 
         // Alocar a matriz de adjacência
-        graph = (int **)malloc(numberOfVertices * sizeof(int *));
-        if (graph == NULL) {
-          printf("\nErro ao alocar memória!\n");
+        if (allocateAdjacencyMatrix(&graph, numberOfVertices)) {
           return 1;
-        }
-        for (int line = 0; line < numberOfVertices; line++) {
-          graph[line] = (int *)malloc(numberOfVertices * sizeof(int));
-          if (graph[line] == NULL) {
-            printf("\nErro ao alocar memória!\n");
-            freeGraph(graph, line);
-            return 1;
-          }
         }
 
         // Preencher matriz de adjacência
